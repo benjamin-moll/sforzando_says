@@ -21,6 +21,7 @@ int lastRedState = HIGH;
 bool played = false;
 
 
+
 int current_level = 1;
 const int max_level = 5;
 
@@ -43,7 +44,7 @@ void setup() {
 }
 
 void loop() {
-
+  
   if (current_level == 1) {
     generate_sfsequence();
   }
@@ -58,7 +59,8 @@ void loop() {
 }
 
 void generate_sfsequence() {
-  randomSeed(millis());
+
+  randomSeed(analogRead(0));
 
   //generate sequence based on current level instead of max level, incremement current level after player sequence entered correctly
 
