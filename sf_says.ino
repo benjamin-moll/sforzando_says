@@ -9,11 +9,13 @@ const int FREQ_F4 = 349;
 const int NOTE_D3 = 62;
 const int FREQ_D3 = 146;
 
-const int blueButton = 2;
-const int redButton = 3;
+const int A4_Button = 2;
+const int F4_Button = 3;
+const int D3_Button = 5;
 
-int lastBlueState = HIGH;
-int lastRedState = HIGH;
+int lastA4State = HIGH;
+int lastF4State = HIGH;
+int lastD3State = HIGH;
 
 String incomingByte = " ";
 
@@ -21,12 +23,12 @@ bool played = false;
 bool generate = false;
 
 
-int initial_level = 4;
-int current_level = 4;
+int initial_level = 2;
+int current_level = 2;
 const int max_level = 10;
 
 //sequence of notes
-int notes[] = {NOTE_A4, NOTE_F4};
+int notes[] = {NOTE_A4, NOTE_F4,NOTE_D3};
 
 int sf_sequence[max_level];
 int in_sequence[max_level];
@@ -35,8 +37,9 @@ int in_sequence[max_level];
 
 
 void setup() {
-  pinMode(blueButton, INPUT_PULLUP);
-  pinMode(redButton, INPUT_PULLUP);
+  pinMode(A4_Button, INPUT_PULLUP);
+  pinMode(F4_Button, INPUT_PULLUP);
+  pinMode(D3_Button, INPUT_PULLUP);
 
   Serial.begin(9600);
 
@@ -97,14 +100,15 @@ void get_sequence() {
     correct = 0;
     while (correct == 0) {
       //read the buttons
-      int blueState = digitalRead(blueButton);
-      int redState = digitalRead(redButton);
+      int A4_State = digitalRead(A4_Button);
+      int F4_State = digitalRead(F4_Button);
+      int D3_State = digitalRead(D3_Button);
       
-      //if either button is pressed
-      if (blueState != lastBlueState || redState != lastRedState) {
+      //if one of the buttons is pressed
+      if (A4_State != lastA4State || F4_State != lastF4State || D3_State != lastD3State) {
 
-        //if blue pushed, add to in_sequence
-        if (blueState == LOW)
+        //if A4 pushed, add to in_sequence
+        if (A4_State == LOW)
         {
           //play note A4
           midiCmd(0x90, NOTE_A4, 0x60);
@@ -124,8 +128,8 @@ void get_sequence() {
 
         }
 
-        //if red pushed, add to in_sequence
-        if (redState == LOW)
+        //if F4 pushed, add to in_sequence
+        if (F4_State == LOW)
         {
           //play note F4
           midiCmd(0x90, NOTE_F4, 0x60);
@@ -143,10 +147,32 @@ void get_sequence() {
           }
 
         }
+
+         //if D3 pushed, add to in_sequence
+        if (D3_State == LOW)
+        {
+          //play note A4
+          midiCmd(0x90, NOTE_D3, 0x60);
+          delay(1000);
+          midiCmd(0x80, NOTE_D3, 0x00);
+
+          //add it to sequence
+          in_sequence[i] = NOTE_D3;
+          correct = 1;
+          delay(200);
+          //if it does not match generated sequence, game over
+          if (in_sequence[i] != sf_sequence[i])
+          {
+            gameOver();
+            return;
+          }
+
+        }
         
       }
-      lastRedState = redState;
-      lastBlueState = blueState;
+      lastF4State = F4_State;
+      lastA4State = A4_State;
+      lastD3State = D3_State;
     }
   }
   levelUp();
