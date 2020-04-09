@@ -9,21 +9,21 @@ const int FREQ_F4 = 349;
 const int NOTE_D3 = 62;
 const int FREQ_D3 = 146;
 
-
-const int speakerPin = 5;  // the pin number for the speaker
 const int blueButton = 2;
 const int redButton = 3;
 
 int lastBlueState = HIGH;
 int lastRedState = HIGH;
 
+String incomingByte = " ";
 
 bool played = false;
+bool generate = false;
 
 
-
-int current_level = 1;
-const int max_level = 5;
+int initial_level = 4;
+int current_level = 4;
+const int max_level = 10;
 
 //sequence of notes
 int notes[] = {NOTE_A4, NOTE_F4};
@@ -35,7 +35,6 @@ int in_sequence[max_level];
 
 
 void setup() {
-  pinMode(speakerPin, OUTPUT);
   pinMode(blueButton, INPUT_PULLUP);
   pinMode(redButton, INPUT_PULLUP);
 
@@ -45,51 +44,56 @@ void setup() {
 
 void loop() {
   
-  if (current_level == 1) {
+  if ((!generate) && current_level<max_level) {
+    delay(500);
     generate_sfsequence();
+    generate = !generate;
   }
   delay(200);
   //play the sequence once
   if (!played) {
     delay(500);
+    //Serial.println("playing sequence...");
     sfSays();
     played = !played;
+   
   }
   get_sequence();
 }
 
 void generate_sfsequence() {
 
+  //makes sequence ACTUALLY random
   randomSeed(analogRead(0));
 
-  //generate sequence based on current level instead of max level, incremement current level after player sequence entered correctly
+//  Serial.println("generating sequence");
 
-  for (int i = 0; i < max_level; i++) {
+  for (int i = 0; i < current_level; i++) {
     int n = random(0, (sizeof(notes) / sizeof(notes[0])));
-    //      int n =random(0,2);
+
     sf_sequence[i] = notes[n];
      
   }  
+
 }
 
 void sfSays() {
 
   //play an initial sequence of notes denoted in the sf_sequence list
-  for (int i = 0; i < (sizeof(sf_sequence) / sizeof(sf_sequence[0])); i++) {
+  for (int i = 0; i < current_level; i++) {
     midiCmd(0x90, sf_sequence[i], 0x60);
-    delay(2000);
+    delay(1000);
     midiCmd(0x80, sf_sequence[i], 0x00);
+    delay(500);
   }
-
 
 }
 
 
 void get_sequence() {
-
-
+  
   int correct = 0;
-  for (int i = 0; i < max_level; i++) {
+  for (int i = 0; i < current_level; i++) {
     correct = 0;
     while (correct == 0) {
       //read the buttons
@@ -152,14 +156,30 @@ void levelUp() {
   if (current_level < max_level) {
     current_level++;
     Serial.println("level up!");
+    Serial.println(current_level);
+    generate = !generate;
+    played = !played;
+    //generate_sequence();
+    
   }
 
 }
 
 void gameOver() {
 
-  Serial.println("you lose");
+  Serial.println("you lose!");
   current_level = 1;
+  
+//  Serial.println("want to play again? Type y for yes");
+//  if(Serial.available()>0){
+//    if(incomingByte == "y\r") {
+//      generate = !generate;
+//    }
+//    else{
+//      Serial.println("GAME OVER");
+//    }
+//  }
+
 }
 
 
