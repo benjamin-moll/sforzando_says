@@ -1,4 +1,4 @@
-//Beginner DIFFICULTY: 2 notes, random sequence, max level = 7
+//Beginner DIFFICULTY: 2 notes, continuous sequence, max level = 7
 
 
 #include <MIDIUSB.h>
@@ -52,7 +52,7 @@ void loop() {
   }
   delay(200);
   //play the sequence once
-  if (!played) {
+  if (!played && current_level<max_level) {
     delay(500);
     //Serial.println("playing sequence...");
     sfSays();
@@ -69,7 +69,7 @@ void generate_sfsequence() {
 
 //  Serial.println("generating sequence");
 
-  for (int i = 0; i < current_level; i++) {
+  for (int i = 0; i < max_level; i++) {
     int n = random(0, (sizeof(notes) / sizeof(notes[0])));
 
     sf_sequence[i] = notes[n];
@@ -160,9 +160,11 @@ void levelUp() {
     current_level++;
     Serial.println("level up!");
     Serial.println(current_level);
-    generate = !generate;
-    played = !played;
-    //generate_sequence();
+    played = !played; 
+  }
+   if (current_level == max_level){
+    
+    Serial.print("you win!");
     
   }
 

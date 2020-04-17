@@ -1,4 +1,4 @@
-//MEDIUM DIFFICULTY: 3 notes, random sequence, max level = 10
+//MEDIUM DIFFICULTY: 3 notes, continuous sequence, max level = 10
 
 #include <MIDIUSB.h>
 
@@ -22,6 +22,7 @@ int lastD3State = HIGH;
 String incomingByte = " ";
 
 bool played = false;
+bool generate = false;
 
 
 
@@ -49,14 +50,15 @@ void setup() {
 
 void loop() {
   
-  if (current_level<max_level) {
+  if ((!generate) && current_level<max_level) {
     delay(500);
     generate_sfsequence();
+    generate = !generate;
     
   }
   delay(200);
   //play the sequence once
-  if (!played) {
+  if (!played && current_level<max_level) {
     delay(500);
     //Serial.println("playing sequence...");
     sfSays();
@@ -184,10 +186,12 @@ void levelUp() {
   if (current_level < max_level) {
     current_level++;
     Serial.println("level up!");
-    Serial.println(current_level);
-    
+    Serial.println(current_level);    
     played = !played;
-
+  }
+  if (current_level == max_level){
+    
+    Serial.print("you win!");
     
   }
 
