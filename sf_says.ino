@@ -22,7 +22,7 @@ int lastD3State = HIGH;
 String incomingByte = " ";
 
 bool played = false;
-bool generate = false;
+
 
 
 int initial_level = 2;
@@ -49,10 +49,10 @@ void setup() {
 
 void loop() {
   
-  if ((!generate) && current_level<max_level) {
+  if (current_level<max_level) {
     delay(500);
     generate_sfsequence();
-    generate = !generate;
+    
   }
   delay(200);
   //play the sequence once
@@ -73,7 +73,7 @@ void generate_sfsequence() {
 
 //  Serial.println("generating sequence");
 
-  for (int i = 0; i < current_level; i++) {
+  for (int i = 0; i < max_level; i++) {
     int n = random(0, (sizeof(notes) / sizeof(notes[0])));
 
     sf_sequence[i] = notes[n];
@@ -185,9 +185,9 @@ void levelUp() {
     current_level++;
     Serial.println("level up!");
     Serial.println(current_level);
-    generate = !generate;
+    
     played = !played;
-    //generate_sequence();
+
     
   }
 

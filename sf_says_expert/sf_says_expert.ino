@@ -204,7 +204,7 @@ void get_sequence() {
       lastF4State = F4_State;
       lastA4State = A4_State;
       lastD3State = D3_State;
-      lastF2State = F2_State
+      lastF2State = F2_State;
     }
   }
   levelUp();
