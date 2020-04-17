@@ -1,3 +1,5 @@
+//MEDIUM DIFFICULTY: 3 notes, random sequence, max level = 10
+
 #include <MIDIUSB.h>
 
 const int NOTE_A4 = 69;
