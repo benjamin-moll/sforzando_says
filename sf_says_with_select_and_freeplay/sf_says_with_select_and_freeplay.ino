@@ -102,18 +102,27 @@ void loop() {
 int sel_state() {
   //read our select button
   int state = digitalRead(sel_button);
+
+
+
   if (lastSelState != state) {
+
     if (state == LOW) {
+
+
       //if pressed, increment mode counter
+
       delay(20);
       mode++;
+
+
+      //don't let mode go higher than 4 and rollover to 1 if button pressed again
+      mode = mode % 5;
+      if (mode < 1 || mode == 5) mode = 1;
+
       Serial.print("Current Mode:");
       Serial.print(mode);
       Serial.println("");
-
-      //don't let mode go higher than 4
-      mode = mode % 4;
-
 
     }
     lastSelState = state;
@@ -124,6 +133,8 @@ int sel_state() {
   if (currentTime1 - newTimer1 >= 5000) {
     newTimer1 = currentTime1;
     selected = !selected;
+    Serial.print("mode selected:");
+    Serial.println(mode);
     return mode;
     counter = 1;
   }
