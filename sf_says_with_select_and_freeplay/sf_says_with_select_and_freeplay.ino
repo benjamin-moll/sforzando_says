@@ -41,6 +41,7 @@ int mode = 1;
 bool start = false;
 
 
+
 int initial_level = 2;
 int current_level = 2;
 const int max_level = 15;
@@ -72,7 +73,7 @@ void setup() {
 void loop() {
   //makes program wait 2 seconds before printing instruction line, otherwise won't display in SM
   unsigned long currentTime = millis();
-  if (currentTime - newTimer2 >= 2000) {
+  if ((currentTime - newTimer2 >= 2000)) {
     newTimer2 = currentTime;
     if (counter == 0) {
       Serial.println("Select mode: 1= free play, 2 = beginner, 3 = intermediate, 4 = expert");
@@ -103,15 +104,10 @@ int sel_state() {
   //read our select button
   int state = digitalRead(sel_button);
 
-
-
   if (lastSelState != state) {
 
     if (state == LOW) {
-
-
       //if pressed, increment mode counter
-
       delay(20);
       mode++;
 
@@ -130,7 +126,7 @@ int sel_state() {
 
 
   unsigned long currentTime1 = millis();
-  if (currentTime1 - newTimer1 >= 5000) {
+  if ((currentTime1 - newTimer1 >= 5000) && counter == 1) {
     newTimer1 = currentTime1;
     selected = !selected;
     Serial.print("mode selected:");
@@ -230,6 +226,7 @@ void freePlay() {
   int D3_State = digitalRead(D3_Button);
   int F2_State = digitalRead(F2_Button);
 
+
   if (A4_State != lastA4State || F4_State != lastF4State || D3_State != lastD3State || F2_State != lastF2State) {
 
     //if A4 pushed, play A4
@@ -237,16 +234,26 @@ void freePlay() {
     {
       //play note A4
       midiCmd(0x90, NOTE_A4, 0x60);
-      delay(1000);
+      //delay(1000);
+//      midiCmd(0x80, NOTE_A4, 0x00);
+
+    }
+    else if (A4_State == HIGH){
+      delay(10);
       midiCmd(0x80, NOTE_A4, 0x00);
     }
+
 
     //if F4 pushed, play F4
     if (F4_State == LOW)
     {
       //play note F4
       midiCmd(0x90, NOTE_F4, 0x60);
-      delay(1000);
+//      delay(1000);
+//      midiCmd(0x80, NOTE_F4, 0x00);
+    }
+    else if (F4_State == HIGH){
+      delay(10);
       midiCmd(0x80, NOTE_F4, 0x00);
     }
 
@@ -255,7 +262,11 @@ void freePlay() {
     {
       //play note A4
       midiCmd(0x90, NOTE_D3, 0x60);
-      delay(1000);
+//      delay(1000);
+//      midiCmd(0x80, NOTE_D3, 0x00);
+    }
+    else if (D3_State == HIGH){
+      delay(10);
       midiCmd(0x80, NOTE_D3, 0x00);
     }
 
@@ -264,9 +275,13 @@ void freePlay() {
     {
       //play note A4
       midiCmd(0x90, NOTE_F2, 0x60);
-      delay(1000);
-      midiCmd(0x80, NOTE_F2, 0x00);
+//      delay(1000);
+//      midiCmd(0x80, NOTE_F2, 0x00);
 
+    }
+    else if (F2_State == HIGH){
+      delay(10);
+      midiCmd(0x80, NOTE_F2, 0x00);
     }
 
   }
@@ -426,12 +441,21 @@ void levelUp() {
 bool gameOver() {
 
   Serial.println("you lose!");
+
+
   current_level = 1;
   selected = !selected;
   start = false;
-  mode = 0;
+
+  mode = 1;
+
   return selected;
+  return start;
+
   counter = 0;
+
+
+
 }
 
 
