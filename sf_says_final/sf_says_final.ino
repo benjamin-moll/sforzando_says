@@ -23,7 +23,7 @@ const int G3_Button = 3;
 const int C4_Button = 5;
 const int E4_Button = 6;
 const int sel_button = 9;
-const int speaker = 10;
+
 
 int lastC3State = HIGH;
 int lastG3State = HIGH;
@@ -67,7 +67,7 @@ void setup() {
   pinMode(C4_Button, INPUT_PULLUP);
   pinMode(E4_Button, INPUT_PULLUP);
   pinMode(sel_button, INPUT_PULLUP);
-  pinMode(speaker, OUTPUT);
+
 
   Serial.begin(9600);
 
@@ -107,7 +107,7 @@ void loop() {
 
 
   else if (current_level == max_level) {
-    if(win_counter == 0){
+    if (win_counter == 0) {
       delay(1000);
       Serial.println("YOU WIN!");
       delay(3000);
@@ -115,7 +115,7 @@ void loop() {
       delay(2000);
       win_counter = 1;
     }
-    
+
 
   }
 
@@ -254,7 +254,7 @@ int generate_sfsequence(int mySize) {
 
 void freePlay() {
 
-  if (p_count == 0){
+  if (p_count == 0) {
     delay(2000);
     Serial.println("Welcome to Free Play mode! Press any button to play that note so you can familiarize yourself with SforzandoSays!");
     delay(2000);
@@ -334,17 +334,56 @@ void freePlay() {
 
 }
 
+void odyssey_melody() {
+  midiCmd(0x90, NOTE_C3, 0x60);
+  delay(2000);
+  midiCmd(0x80, NOTE_C3, 0x00);
+  delay(500);
+  midiCmd(0x90, NOTE_G3, 0x60);
+  delay(2000);
+  midiCmd(0x80, NOTE_G3, 0x00);
+  delay(500);
+  midiCmd(0x90, NOTE_C4, 0x60);
+  delay(3000);
+  midiCmd(0x80, NOTE_C4, 0x00);
+  delay(500);
+  midiCmd(0x90, NOTE_C3, 0x60);
+  midiCmd(0x90, NOTE_G3, 0x60);
+  midiCmd(0x90, NOTE_C4, 0x60);
+  midiCmd(0x90, NOTE_E4, 0x60);
+  delay(200);
+  midiCmd(0x80, NOTE_C3, 0x00);
+  midiCmd(0x80, NOTE_G3, 0x00);
+  midiCmd(0x80, NOTE_C4, 0x00);
+  midiCmd(0x80, NOTE_E4, 0x00);
+  delay(500);
+  midiCmd(0x90, NOTE_C3, 0x60);
+  midiCmd(0x90, NOTE_G3, 0x60);
+  midiCmd(0x90, NOTE_C4, 0x60);
+  midiCmd(0x90, NOTE_E4, 0x60);
+  delay(5000);
+  midiCmd(0x80, NOTE_C3, 0x00);
+  midiCmd(0x80, NOTE_G3, 0x00);
+  midiCmd(0x80, NOTE_C4, 0x00);
+  midiCmd(0x80, NOTE_E4, 0x00);
+  delay(500);
+
+}
+
 void play_odyssey() {
 
   if (play_counter == 0) {
     delay(1000);
     Serial.println("If you think, you've mastered Sforzando Says...");
     Serial.println("It's time for a test.");
+    delay(1000);
+    odyssey_melody();
     delay(3000);
-    Serial.println("Try playing the low note for 2 seconds, then middle low note for 2 seconds, then middle high note for 3 seconds");
-    delay(4000);
+    Serial.println("Try playing the note 1 for 2 seconds, then Note 2 for 2 seconds, then Note 3 for 3 seconds");
+    delay(2000);
     Serial.println("Then play all four notes together for half a second immediately followed by holding them all down");
     Serial.println("If you played correctly, you should hear a famous movie theme song :)");
+    Serial.println("");
     delay(2000);
     play_counter = 1;
   }
@@ -358,15 +397,24 @@ void sfSays() {
 
 
   //play an initial sequence of notes denoted in the sf_sequence list
-  for (int i = 0; i < current_level; i++) {
-    midiCmd(0x90, sf_sequence[i], 0x60);
-    delay(1000);
-    midiCmd(0x80, sf_sequence[i], 0x00);
-    delay(500);
+  if (mode == 2 or mode == 3) {
+    for (int i = 0; i < current_level; i++) {
+      midiCmd(0x90, sf_sequence[i], 0x60);
+      delay(1000);
+      midiCmd(0x80, sf_sequence[i], 0x00);
+      delay(500);
+    }
+  }
+  else {
+    for (int i = 0; i < current_level; i++) {
+      midiCmd(0x90, sf_sequence[i], 0x60);
+      delay(500);
+      midiCmd(0x80, sf_sequence[i], 0x00);
+      delay(500);
+    }
   }
 
 }
-
 
 void get_sequence() {
 
@@ -387,9 +435,16 @@ void get_sequence() {
         if (C3_State == LOW)
         {
           //play note C3
-          midiCmd(0x90, NOTE_C3, 0x60);
-          delay(1000);
-          midiCmd(0x80, NOTE_C3, 0x00);
+          if (mode == 2 || mode == 3) {
+            midiCmd(0x90, NOTE_C3, 0x60);
+            delay(1000);
+            midiCmd(0x80, NOTE_C3, 0x00);
+          }
+          else {
+            midiCmd(0x90, NOTE_C3, 0x60);
+            delay(500);
+            midiCmd(0x80, NOTE_C3, 0x00);
+          }
 
           //add it to sequence
           in_sequence[i] = NOTE_C3;
@@ -408,9 +463,17 @@ void get_sequence() {
         if (G3_State == LOW)
         {
           //play note G3
-          midiCmd(0x90, NOTE_G3, 0x60);
-          delay(1000);
-          midiCmd(0x80, NOTE_G3, 0x00);
+          if (mode == 2 || mode == 3) {
+            midiCmd(0x90, NOTE_G3, 0x60);
+            delay(1000);
+            midiCmd(0x80, NOTE_G3, 0x00);
+          }
+          else {
+            midiCmd(0x90, NOTE_G3, 0x60);
+            delay(500);
+            midiCmd(0x80, NOTE_G3, 0x00);
+          }
+
 
           in_sequence[i] = NOTE_G3;
           correct = 1;
@@ -427,10 +490,18 @@ void get_sequence() {
         //if C4 pushed, add to in_sequence
         if (C4_State == LOW)
         {
-          //play note C3
-          midiCmd(0x90, NOTE_C4, 0x60);
-          delay(1000);
-          midiCmd(0x80, NOTE_C4, 0x00);
+          //play note C4
+          if (mode == 2 || mode == 3) {
+            midiCmd(0x90, NOTE_C4, 0x60);
+            delay(1000);
+            midiCmd(0x80, NOTE_C4, 0x00);
+          }
+          else {
+            midiCmd(0x90, NOTE_C4, 0x60);
+            delay(500);
+            midiCmd(0x80, NOTE_C4, 0x00);
+          }
+
 
           //add it to sequence
           in_sequence[i] = NOTE_C4;
@@ -448,10 +519,18 @@ void get_sequence() {
         //if E4 pushed, add to in_sequence
         if (E4_State == LOW)
         {
-          //play note C3
-          midiCmd(0x90, NOTE_E4, 0x60);
-          delay(1000);
-          midiCmd(0x80, NOTE_E4, 0x00);
+          //play note E4
+          if (mode == 2 || mode == 3) {
+            midiCmd(0x90, NOTE_E4, 0x60);
+            delay(1000);
+            midiCmd(0x80, NOTE_E4, 0x00);
+          }
+          else {
+            midiCmd(0x90, NOTE_E4, 0x60);
+            delay(500);
+            midiCmd(0x80, NOTE_E4, 0x00);
+          }
+
 
           //add it to sequence
           in_sequence[i] = NOTE_E4;
@@ -501,7 +580,7 @@ bool gameOver() {
 
   Serial.println("You Lose!");
   Serial.println("Press restart to try again! Or practice in Free Play Mode!");
-  
+
 
   current_level = 1;
   selected = !selected;
@@ -514,7 +593,7 @@ bool gameOver() {
 
   counter = 0;
 
-  
+
 
 }
 
